@@ -1,4 +1,4 @@
-from instruments import DS1000Z
+from instruments import DS1000Z, DP800
 
 def ds1000z_demo():
 
@@ -18,6 +18,12 @@ def ds1000z_demo():
     instrument.set_source_modulation_type('FM')
     instrument.enable_source_modulation()
     instrument.take_screenshot()
+
+
+def dp800_demo():
+    instrument = DP800("192.168.254.101")
+    print(instrument)
+
 
 def main():
     ds1000z_demo()
