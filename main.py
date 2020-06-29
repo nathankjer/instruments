@@ -1,12 +1,8 @@
-import time, math
-
 from instruments import DS1000Z
 
-import matplotlib.pyplot as plt
+def ds1000z_demo():
 
-def main():
-
-    # To connect:
+    # To connect on Ubuntu:
     # sudo ifconfig enp7s0 inet 192.168.254.254 netmask 255.255.255.0
     instrument = DS1000Z('192.168.254.100')
     instrument.reset()
@@ -22,6 +18,9 @@ def main():
     instrument.set_source_modulation_type('FM')
     instrument.enable_source_modulation()
     instrument.take_screenshot()
+
+def main():
+    ds1000z_demo()
 
 if __name__ == "__main__":
     main()

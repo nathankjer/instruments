@@ -1,21 +1,21 @@
 import unittest
+import time
 
 from instruments import DS1000Z
 
 class TestDS1000Z(unittest.TestCase):
-
     def setUp(self):
-        self.instrument = DS1000Z('192.168.254.100')
+        self.instrument = DS1000Z("192.168.254.100")
         self.instrument.reset()
         self.instrument.hide_channel(1)
-        self.instrument.set_probe_ratio(1,1)
-        self.instrument.set_probe_ratio(1,2)
-        self.instrument.set_probe_ratio(1,3)
-        self.instrument.set_probe_ratio(1,4)
-        self.instrument.set_channel_scale(1,1)
-        self.instrument.set_channel_scale(1,2)
-        self.instrument.set_channel_scale(1,3)
-        self.instrument.set_channel_scale(1,4)
+        self.instrument.set_probe_ratio(1, 1)
+        self.instrument.set_probe_ratio(1, 2)
+        self.instrument.set_probe_ratio(1, 3)
+        self.instrument.set_probe_ratio(1, 4)
+        self.instrument.set_channel_scale(1, 1)
+        self.instrument.set_channel_scale(1, 2)
+        self.instrument.set_channel_scale(1, 3)
+        self.instrument.set_channel_scale(1, 4)
 
     def tearDown(self):
         del self.instrument
@@ -24,7 +24,7 @@ class TestDS1000Z(unittest.TestCase):
         self.instrument.show_channel()
         self.instrument.enable_source()
 
-        self.instrument.set_source_function('SIN')
+        self.instrument.set_source_function("SIN")
         self.instrument.set_source_frequency(41)
         self.instrument.set_source_amplitude(21e-3)
         self.instrument.set_source_amplitude(20e-3)
@@ -54,56 +54,56 @@ class TestDS1000Z(unittest.TestCase):
         self.instrument.run()
 
     def test_averages(self):
-        for i in range(1,10)[::-1]:
-            self.instrument.set_averages(2**i)
-            assert self.instrument.get_averages() == 2**i
+        for i in range(1, 10)[::-1]:
+            self.instrument.set_averages(2 ** i)
+            assert self.instrument.get_averages() == 2 ** i
 
     def test_memory_depth(self):
-        for num_channels,base in [(1,12),(2,6),(4,3)]:
-            for channel in range(1,num_channels+1):
+        for num_channels, base in [(1, 12), (2, 6), (4, 3)]:
+            for channel in range(1, num_channels + 1):
                 self.instrument.show_channel(channel)
-            for exp in range(3,7):
-                memory_depth = int(base*10**exp)
+            for exp in range(3, 7):
+                memory_depth = int(base * 10 ** exp)
                 self.instrument.set_memory_depth(memory_depth)
                 assert self.instrument.get_memory_depth() == memory_depth
-            for channel in range(1,num_channels+1):
+            for channel in range(1, num_channels + 1):
                 self.instrument.hide_channel(channel)
-        self.instrument.set_memory_depth('AUTO')
-        assert self.instrument.get_memory_depth() == 'AUTO'
+        self.instrument.set_memory_depth("AUTO")
+        assert self.instrument.get_memory_depth() == "AUTO"
 
     def test_acquisition_type(self):
-        for acquisition_type in ['AVER','PEAK','HRES','NORM']:
+        for acquisition_type in ["AVER", "PEAK", "HRES", "NORM"]:
             self.instrument.set_acquisition_type(acquisition_type)
             self.instrument.get_acquisition_type() == acquisition_type
 
     def test_sample_rate(self):
-        for num_channels in [1,2,4]:
-            for channel in range(1,num_channels+1):
+        for num_channels in [1, 2, 4]:
+            for channel in range(1, num_channels + 1):
                 self.instrument.show_channel(channel)
             assert self.instrument.get_sample_rate() == 1e9 / num_channels
-            for channel in range(1,num_channels+1):
+            for channel in range(1, num_channels + 1):
                 self.instrument.hide_channel(channel)
 
     # TODO: Calibration functions
 
     def test_bandwidth_limit(self):
-        self.instrument.set_bandwidth_limit('20M')
-        assert self.instrument.get_bandwidth_limit() == '20M'
-        self.instrument.set_bandwidth_limit('OFF')
-        assert self.instrument.get_bandwidth_limit() == 'OFF'
+        self.instrument.set_bandwidth_limit("20M")
+        assert self.instrument.get_bandwidth_limit() == "20M"
+        self.instrument.set_bandwidth_limit("OFF")
+        assert self.instrument.get_bandwidth_limit() == "OFF"
 
     def test_coupling(self):
-        for coupling in ['GND','AC','DC']:
+        for coupling in ["GND", "AC", "DC"]:
             self.instrument.set_channel_coupling(coupling)
             assert self.instrument.get_channel_coupling() == coupling
 
     def test_channel_display(self):
-        for channel in range(1,5):
-           self.instrument.show_channel(channel)
-           assert self.instrument.channel_is_shown(channel)
-           assert self.instrument.num_channels_shown() == 1
-           self.instrument.hide_channel(channel)
-           assert not self.instrument.channel_is_shown(channel)
+        for channel in range(1, 5):
+            self.instrument.show_channel(channel)
+            assert self.instrument.channel_is_shown(channel)
+            assert self.instrument.num_channels_shown() == 1
+            self.instrument.hide_channel(channel)
+            assert not self.instrument.channel_is_shown(channel)
 
     def test_channel_invert(self):
         self.instrument.invert_channel()
@@ -142,10 +142,10 @@ class TestDS1000Z(unittest.TestCase):
         assert self.instrument.get_probe_ratio() == 1
 
     def test_channel_unit(self):
-        self.instrument.set_channel_unit('WATT')
-        self.instrument.get_channel_unit() == 'WATT'
-        self.instrument.set_channel_unit('VOLT')
-        self.instrument.get_channel_unit() == 'VOLT'
+        self.instrument.set_channel_unit("WATT")
+        self.instrument.get_channel_unit() == "WATT"
+        self.instrument.set_channel_unit("VOLT")
+        self.instrument.get_channel_unit() == "VOLT"
 
     def test_vernier(self):
         self.instrument.enable_vernier()
@@ -154,148 +154,148 @@ class TestDS1000Z(unittest.TestCase):
         assert not self.instrument.vernier_is_enabled()
 
     def test_cursor_mode(self):
-        self.instrument.set_cursor_mode('MAN')
-        assert self.instrument.get_cursor_mode() == 'MAN'
-        self.instrument.set_cursor_mode('OFF')
-        assert self.instrument.get_cursor_mode() == 'OFF'
+        self.instrument.set_cursor_mode("MAN")
+        assert self.instrument.get_cursor_mode() == "MAN"
+        self.instrument.set_cursor_mode("OFF")
+        assert self.instrument.get_cursor_mode() == "OFF"
 
     def test_cursor_type(self):
-        self.instrument.set_cursor_mode('MAN')
-        self.instrument.set_cursor_type('Y')
-        assert self.instrument.get_cursor_type() == 'Y'
-        self.instrument.set_cursor_type('X')
-        assert self.instrument.get_cursor_type() == 'X'
-        self.instrument.set_cursor_mode('OFF')
+        self.instrument.set_cursor_mode("MAN")
+        self.instrument.set_cursor_type("Y")
+        assert self.instrument.get_cursor_type() == "Y"
+        self.instrument.set_cursor_type("X")
+        assert self.instrument.get_cursor_type() == "X"
+        self.instrument.set_cursor_mode("OFF")
 
     def test_cursor_source(self):
         self.instrument.show_channel(1)
         self.instrument.show_channel(2)
-        self.instrument.set_cursor_mode('MAN')
-        for channel in ['CHAN1','CHAN2']:
+        self.instrument.set_cursor_mode("MAN")
+        for channel in ["CHAN1", "CHAN2"]:
             self.instrument.set_cursor_source(channel)
             assert self.instrument.get_cursor_source() == channel
-        self.instrument.set_cursor_mode('TRAC')
-        for channel in ['CHAN1','CHAN2']:
-            self.instrument.set_cursor_source(channel,1)
+        self.instrument.set_cursor_mode("TRAC")
+        for channel in ["CHAN1", "CHAN2"]:
+            self.instrument.set_cursor_source(channel, 1)
             assert self.instrument.get_cursor_source(1) == channel
-        self.instrument.set_cursor_mode('OFF')
+        self.instrument.set_cursor_mode("OFF")
         self.instrument.hide_channel(2)
         self.instrument.hide_channel(1)
 
     def test_cursor_time_unit(self):
-        self.instrument.set_cursor_mode('MAN')
-        self.instrument.set_cursor_time_unit('HZ')
-        assert self.instrument.get_cursor_time_unit() == 'HZ'
-        self.instrument.set_cursor_time_unit('S')
-        assert self.instrument.get_cursor_time_unit() == 'S'
-        self.instrument.set_cursor_mode('OFF')
+        self.instrument.set_cursor_mode("MAN")
+        self.instrument.set_cursor_time_unit("HZ")
+        assert self.instrument.get_cursor_time_unit() == "HZ"
+        self.instrument.set_cursor_time_unit("S")
+        assert self.instrument.get_cursor_time_unit() == "S"
+        self.instrument.set_cursor_mode("OFF")
 
     def test_cursor_vertical_unit(self):
-        self.instrument.set_cursor_mode('MAN')
-        self.instrument.set_cursor_vertical_unit('PERC')
-        assert self.instrument.get_cursor_vertical_unit() == 'PERC'
-        self.instrument.set_cursor_vertical_unit('SOUR')
-        assert self.instrument.get_cursor_vertical_unit() == 'SOUR'
-        self.instrument.set_cursor_mode('OFF')
+        self.instrument.set_cursor_mode("MAN")
+        self.instrument.set_cursor_vertical_unit("PERC")
+        assert self.instrument.get_cursor_vertical_unit() == "PERC"
+        self.instrument.set_cursor_vertical_unit("SOUR")
+        assert self.instrument.get_cursor_vertical_unit() == "SOUR"
+        self.instrument.set_cursor_mode("OFF")
 
     def test_cursor_position(self):
-        self.instrument.set_cursor_mode('MAN')
-        self.instrument.set_cursor_position('A','X',200)
-        self.instrument.get_cursor_position('A','X') == 200
-        self.instrument.set_cursor_position('A','X',100)
-        self.instrument.get_cursor_position('A','X') == 100
-        self.instrument.set_cursor_position('A','Y',200)
-        self.instrument.get_cursor_position('A','Y') == 200
-        self.instrument.set_cursor_position('A','Y',100)
-        self.instrument.get_cursor_position('A','Y') == 100
-        self.instrument.set_cursor_position('B','X',200)
-        self.instrument.get_cursor_position('B','X') == 200
-        self.instrument.set_cursor_position('B','X',100)
-        self.instrument.get_cursor_position('B','X') == 100
-        self.instrument.set_cursor_position('B','Y',200)
-        self.instrument.get_cursor_position('B','Y') == 200
-        self.instrument.set_cursor_position('B','Y',100)
-        self.instrument.get_cursor_position('B','Y') == 100
-        self.instrument.set_cursor_mode('TRAC')
-        self.instrument.set_cursor_position('A','X',200)
-        self.instrument.get_cursor_position('A','X') == 200
-        self.instrument.set_cursor_position('A','X',100)
-        self.instrument.get_cursor_position('A','X') == 100
-        self.instrument.set_cursor_position('B','X',200)
-        self.instrument.get_cursor_position('B','X') == 200
-        self.instrument.set_cursor_position('B','X',100)
-        self.instrument.get_cursor_position('B','X') == 100
-        self.instrument.set_timebase_mode('XY')
-        self.instrument.set_cursor_mode('XY')
-        self.instrument.set_cursor_position('A','X',200)
-        self.instrument.get_cursor_position('A','X') == 200
-        self.instrument.set_cursor_position('A','X',100)
-        self.instrument.get_cursor_position('A','X') == 100
-        self.instrument.set_cursor_position('A','Y',200)
-        self.instrument.get_cursor_position('A','Y') == 200
-        self.instrument.set_cursor_position('A','Y',100)
-        self.instrument.get_cursor_position('A','Y') == 100
-        self.instrument.set_cursor_position('B','X',200)
-        self.instrument.get_cursor_position('B','X') == 200
-        self.instrument.set_cursor_position('B','X',100)
-        self.instrument.get_cursor_position('B','X') == 100
-        self.instrument.set_cursor_position('B','Y',200)
-        self.instrument.get_cursor_position('B','Y') == 200
-        self.instrument.set_cursor_position('B','Y',100)
-        self.instrument.get_cursor_position('B','Y') == 100
-        self.instrument.set_timebase_mode('MAIN')
-        self.instrument.set_cursor_mode('OFF')
+        self.instrument.set_cursor_mode("MAN")
+        self.instrument.set_cursor_position("A", "X", 200)
+        self.instrument.get_cursor_position("A", "X") == 200
+        self.instrument.set_cursor_position("A", "X", 100)
+        self.instrument.get_cursor_position("A", "X") == 100
+        self.instrument.set_cursor_position("A", "Y", 200)
+        self.instrument.get_cursor_position("A", "Y") == 200
+        self.instrument.set_cursor_position("A", "Y", 100)
+        self.instrument.get_cursor_position("A", "Y") == 100
+        self.instrument.set_cursor_position("B", "X", 200)
+        self.instrument.get_cursor_position("B", "X") == 200
+        self.instrument.set_cursor_position("B", "X", 100)
+        self.instrument.get_cursor_position("B", "X") == 100
+        self.instrument.set_cursor_position("B", "Y", 200)
+        self.instrument.get_cursor_position("B", "Y") == 200
+        self.instrument.set_cursor_position("B", "Y", 100)
+        self.instrument.get_cursor_position("B", "Y") == 100
+        self.instrument.set_cursor_mode("TRAC")
+        self.instrument.set_cursor_position("A", "X", 200)
+        self.instrument.get_cursor_position("A", "X") == 200
+        self.instrument.set_cursor_position("A", "X", 100)
+        self.instrument.get_cursor_position("A", "X") == 100
+        self.instrument.set_cursor_position("B", "X", 200)
+        self.instrument.get_cursor_position("B", "X") == 200
+        self.instrument.set_cursor_position("B", "X", 100)
+        self.instrument.get_cursor_position("B", "X") == 100
+        self.instrument.set_timebase_mode("XY")
+        self.instrument.set_cursor_mode("XY")
+        self.instrument.set_cursor_position("A", "X", 200)
+        self.instrument.get_cursor_position("A", "X") == 200
+        self.instrument.set_cursor_position("A", "X", 100)
+        self.instrument.get_cursor_position("A", "X") == 100
+        self.instrument.set_cursor_position("A", "Y", 200)
+        self.instrument.get_cursor_position("A", "Y") == 200
+        self.instrument.set_cursor_position("A", "Y", 100)
+        self.instrument.get_cursor_position("A", "Y") == 100
+        self.instrument.set_cursor_position("B", "X", 200)
+        self.instrument.get_cursor_position("B", "X") == 200
+        self.instrument.set_cursor_position("B", "X", 100)
+        self.instrument.get_cursor_position("B", "X") == 100
+        self.instrument.set_cursor_position("B", "Y", 200)
+        self.instrument.get_cursor_position("B", "Y") == 200
+        self.instrument.set_cursor_position("B", "Y", 100)
+        self.instrument.get_cursor_position("B", "Y") == 100
+        self.instrument.set_timebase_mode("MAIN")
+        self.instrument.set_cursor_mode("OFF")
         self.instrument.hide_channel(1)
 
     def test_cursor_value(self):
-        self.instrument.set_cursor_mode('MAN')
-        assert self.instrument.get_cursor_value('A','X') == -4e-6
-        assert self.instrument.get_cursor_value('A','Y') == 2
-        assert self.instrument.get_cursor_value('B','X') == 4e-6
-        assert self.instrument.get_cursor_value('B','Y') == -2
-        self.instrument.set_cursor_mode('TRAC')
-        assert self.instrument.get_cursor_value('A','X') == -4e-6
-        assert self.instrument.get_cursor_value('A','Y') == None
-        assert self.instrument.get_cursor_value('B','X') == 4e-6
-        assert self.instrument.get_cursor_value('B','Y') == None
-        self.instrument.set_timebase_mode('XY')
-        self.instrument.set_cursor_mode('XY')
-        assert self.instrument.get_cursor_value('A','X') == 2
-        assert self.instrument.get_cursor_value('A','Y') == 2
-        assert self.instrument.get_cursor_value('B','X') == -2
-        assert self.instrument.get_cursor_value('B','Y') == -2
-        self.instrument.set_timebase_mode('MAIN')
-        self.instrument.set_cursor_mode('OFF')
+        self.instrument.set_cursor_mode("MAN")
+        assert self.instrument.get_cursor_value("A", "X") == -4e-6
+        assert self.instrument.get_cursor_value("A", "Y") == 2
+        assert self.instrument.get_cursor_value("B", "X") == 4e-6
+        assert self.instrument.get_cursor_value("B", "Y") == -2
+        self.instrument.set_cursor_mode("TRAC")
+        assert self.instrument.get_cursor_value("A", "X") == -4e-6
+        assert self.instrument.get_cursor_value("A", "Y") == None
+        assert self.instrument.get_cursor_value("B", "X") == 4e-6
+        assert self.instrument.get_cursor_value("B", "Y") == None
+        self.instrument.set_timebase_mode("XY")
+        self.instrument.set_cursor_mode("XY")
+        assert self.instrument.get_cursor_value("A", "X") == 2
+        assert self.instrument.get_cursor_value("A", "Y") == 2
+        assert self.instrument.get_cursor_value("B", "X") == -2
+        assert self.instrument.get_cursor_value("B", "Y") == -2
+        self.instrument.set_timebase_mode("MAIN")
+        self.instrument.set_cursor_mode("OFF")
         self.instrument.hide_channel(1)
 
     def test_cursor_delta(self):
-        self.instrument.set_cursor_mode('MAN')
-        assert self.instrument.get_cursor_delta('X') == 8e-6
-        assert self.instrument.get_cursor_delta('Y') == -4
-        self.instrument.set_cursor_mode('TRAC')
-        assert self.instrument.get_cursor_delta('X') == 8e-6
-        assert self.instrument.get_cursor_delta('Y') == None
-        self.instrument.set_cursor_mode('OFF')
+        self.instrument.set_cursor_mode("MAN")
+        assert self.instrument.get_cursor_delta("X") == 8e-6
+        assert self.instrument.get_cursor_delta("Y") == -4
+        self.instrument.set_cursor_mode("TRAC")
+        assert self.instrument.get_cursor_delta("X") == 8e-6
+        assert self.instrument.get_cursor_delta("Y") == None
+        self.instrument.set_cursor_mode("OFF")
 
     def test_cursor_inverse_delta(self):
-        self.instrument.set_cursor_mode('MAN')
+        self.instrument.set_cursor_mode("MAN")
         assert self.instrument.get_cursor_inverse_delta() == 125000
-        self.instrument.set_cursor_mode('TRAC')
+        self.instrument.set_cursor_mode("TRAC")
         assert self.instrument.get_cursor_inverse_delta() == 125000
-        self.instrument.set_cursor_mode('OFF')
+        self.instrument.set_cursor_mode("OFF")
 
     def test_auto_cursor(self):
         self.instrument.show_channel(1)
         self.instrument.enable_source(1)
         self.instrument.autoscale()
-        self.instrument.show_measurement('FREQ')
-        self.instrument.show_measurement('PER')
-        self.instrument.set_cursor_mode('AUTO')
-        self.instrument.set_cursor_auto_parameters('ITEM1')
-        assert self.instrument.get_cursor_auto_parameters() == 'ITEM1'
-        self.instrument.set_cursor_auto_parameters('ITEM2')
-        assert self.instrument.get_cursor_auto_parameters() == 'ITEM2'
-        self.instrument.set_cursor_mode('OFF')
+        self.instrument.show_measurement("FREQ")
+        self.instrument.show_measurement("PER")
+        self.instrument.set_cursor_mode("AUTO")
+        self.instrument.set_cursor_auto_parameters("ITEM1")
+        assert self.instrument.get_cursor_auto_parameters() == "ITEM1"
+        self.instrument.set_cursor_auto_parameters("ITEM2")
+        assert self.instrument.get_cursor_auto_parameters() == "ITEM2"
+        self.instrument.set_cursor_mode("OFF")
         self.instrument.disable_source(1)
         self.instrument.hide_channel(1)
 
@@ -303,18 +303,18 @@ class TestDS1000Z(unittest.TestCase):
         self.instrument.take_screenshot()
 
     def test_display_type(self):
-        self.instrument.set_display_type('DOTS')
-        assert self.instrument.get_display_type() == 'DOTS'
-        self.instrument.set_display_type('VECT')
-        assert self.instrument.get_display_type() == 'VECT'
+        self.instrument.set_display_type("DOTS")
+        assert self.instrument.get_display_type() == "DOTS"
+        self.instrument.set_display_type("VECT")
+        assert self.instrument.get_display_type() == "VECT"
 
     def test_persistence_time(self):
         self.instrument.set_persistence_time(1)
         assert self.instrument.get_persistence_time() == 1
-        self.instrument.set_persistence_time('INF')
-        assert self.instrument.get_persistence_time() == 'INF'
-        self.instrument.set_persistence_time('MIN')
-        assert self.instrument.get_persistence_time() == 'MIN'
+        self.instrument.set_persistence_time("INF")
+        assert self.instrument.get_persistence_time() == "INF"
+        self.instrument.set_persistence_time("MIN")
+        assert self.instrument.get_persistence_time() == "MIN"
 
     def test_waveform_brightness(self):
         self.instrument.set_waveform_brightness(0)
@@ -325,12 +325,12 @@ class TestDS1000Z(unittest.TestCase):
         assert self.instrument.get_waveform_brightness() == 50
 
     def test_grid(self):
-        self.instrument.set_grid('NONE')
-        assert self.instrument.get_grid() == 'NONE'
-        self.instrument.set_grid('HALF')
-        assert self.instrument.get_grid() == 'HALF'
-        self.instrument.set_grid('FULL')
-        assert self.instrument.get_grid() == 'FULL'
+        self.instrument.set_grid("NONE")
+        assert self.instrument.get_grid() == "NONE"
+        self.instrument.set_grid("HALF")
+        assert self.instrument.get_grid() == "HALF"
+        self.instrument.set_grid("FULL")
+        assert self.instrument.get_grid() == "FULL"
 
     def test_grid_brightness(self):
         self.instrument.set_grid_brightness(0)
@@ -353,11 +353,11 @@ class TestDS1000Z(unittest.TestCase):
         self.instrument.get_event_status()
 
     def test_get_identification(self):
-        assert self.instrument.get_identification().startswith('RIGOL')
-        assert self.instrument.get_vendor().startswith('RIGOL')
-        assert self.instrument.get_product().startswith('DS10')
-        assert self.instrument.get_serial_number().startswith('DS1Z')
-        assert self.instrument.get_firmware().startswith('00.')
+        assert self.instrument.get_identification().startswith("RIGOL")
+        assert self.instrument.get_vendor().startswith("RIGOL")
+        assert self.instrument.get_product().startswith("DS10")
+        assert self.instrument.get_serial_number().startswith("DS1Z")
+        assert self.instrument.get_firmware().startswith("00.")
 
     def test_busy_status(self):
         assert self.instrument.is_busy() == False
@@ -387,20 +387,20 @@ class TestDS1000Z(unittest.TestCase):
         assert not self.instrument.math_is_shown()
 
     def test_math_operator(self):
-        self.instrument.set_math_operator('SUBT')
-        self.instrument.get_math_operator() == 'SUBT'
-        self.instrument.set_math_operator('ADD')
-        self.instrument.get_math_operator() == 'ADD'
+        self.instrument.set_math_operator("SUBT")
+        self.instrument.get_math_operator() == "SUBT"
+        self.instrument.set_math_operator("ADD")
+        self.instrument.get_math_operator() == "ADD"
 
     def test_math_source(self):
-        self.instrument.set_math_source(1,2)
-        self.instrument.get_math_source(1) == 'CHAN2'
-        self.instrument.set_math_source(1,1)
-        self.instrument.get_math_source(1) == 'CHAN1'
-        self.instrument.set_math_source(2,2)
-        self.instrument.get_math_source(2) == 'CHAN2'
-        self.instrument.set_math_source(2,1)
-        self.instrument.get_math_source(2) == 'CHAN1'
+        self.instrument.set_math_source(1, 2)
+        self.instrument.get_math_source(1) == "CHAN2"
+        self.instrument.set_math_source(1, 1)
+        self.instrument.get_math_source(1) == "CHAN1"
+        self.instrument.set_math_source(2, 2)
+        self.instrument.get_math_source(2) == "CHAN2"
+        self.instrument.set_math_source(2, 1)
+        self.instrument.get_math_source(2) == "CHAN1"
 
     def test_math_scale(self):
         self.instrument.set_math_scale(10)
@@ -424,7 +424,7 @@ class TestDS1000Z(unittest.TestCase):
         self.instrument.reset_math()
 
     def test_fft_window(self):
-        for window in ['BLAC','HANN','HAMM','FLAT','TRI','RECT']:
+        for window in ["BLAC", "HANN", "HAMM", "FLAT", "TRI", "RECT"]:
             self.instrument.set_fft_window(window)
             assert self.instrument.get_fft_window() == window
 
@@ -435,10 +435,10 @@ class TestDS1000Z(unittest.TestCase):
         assert not self.instrument.fft_split_is_enabled()
 
     def test_fft_unit(self):
-        self.instrument.set_fft_unit('VRMS')
-        self.instrument.get_fft_unit() == 'VRMS'
-        self.instrument.set_fft_unit('DB')
-        self.instrument.get_fft_unit() == 'DB'
+        self.instrument.set_fft_unit("VRMS")
+        self.instrument.get_fft_unit() == "VRMS"
+        self.instrument.set_fft_unit("DB")
+        self.instrument.get_fft_unit() == "DB"
 
     def test_fft_horizontal_scale(self):
         self.instrument.set_fft_horizontal_scale(5e5)
@@ -446,7 +446,7 @@ class TestDS1000Z(unittest.TestCase):
         self.instrument.set_fft_horizontal_scale(5e6)
         assert self.instrument.get_fft_horizontal_scale() == 5e6
 
-    def test_fft_horizontal_scale(self):
+    def test_fft_center_frequency(self):
         self.instrument.set_fft_center_frequency(1000)
         assert self.instrument.get_fft_center_frequency() == 1000
 
@@ -463,7 +463,7 @@ class TestDS1000Z(unittest.TestCase):
         assert self.instrument.get_math_end() == 1199
 
     def test_math_sensitivity(self):
-        self.instrument.set_math_operator('AND')
+        self.instrument.set_math_operator("AND")
         self.instrument.set_math_sensitivity(0.48)
         assert self.instrument.get_math_sensitivity() == 0.48
         self.instrument.set_math_sensitivity(0)
@@ -475,9 +475,10 @@ class TestDS1000Z(unittest.TestCase):
         self.instrument.show_channel(1)
         self.instrument.show_channel(2)
         self.instrument.autoscale()
-        self.instrument.set_math_operator('DIFF')
+        self.instrument.set_math_operator("DIFF")
         self.instrument.show_math()
         self.instrument.set_differential_smoothing_width(100)
+        time.sleep(3)
         assert self.instrument.get_differential_smoothing_width() == 100
         self.instrument.set_differential_smoothing_width(3)
         assert self.instrument.get_differential_smoothing_width() == 3
@@ -525,16 +526,16 @@ class TestDS1000Z(unittest.TestCase):
         self.instrument.hide_channel()
 
     def test_mask_source(self):
-        for bus in [1,2]:
+        for bus in [1, 2]:
             self.instrument.show_channel(bus)
             self.instrument.enable_source(bus)
         self.instrument.enable_mask()
         self.instrument.set_mask_source(2)
-        assert self.instrument.get_mask_source() == 'CHAN2'
+        assert self.instrument.get_mask_source() == "CHAN2"
         self.instrument.set_mask_source(1)
-        assert self.instrument.get_mask_source() == 'CHAN1'
+        assert self.instrument.get_mask_source() == "CHAN1"
         self.instrument.disable_mask()
-        for bus in [1,2]:
+        for bus in [1, 2]:
             self.instrument.hide_channel(bus)
             self.instrument.disable_source(bus)
 
@@ -575,10 +576,10 @@ class TestDS1000Z(unittest.TestCase):
         assert not self.instrument.mask_beeper_is_enabled()
 
     def test_mask_adjustment(self):
-        self.instrument.set_mask_adjustment('X',1)
-        assert self.instrument.get_mask_adjustment('X') == 1
-        self.instrument.set_mask_adjustment('X',0.24)
-        assert self.instrument.get_mask_adjustment('X') == 0.24
+        self.instrument.set_mask_adjustment("X", 1)
+        assert self.instrument.get_mask_adjustment("X") == 1
+        self.instrument.set_mask_adjustment("X", 0.24)
+        assert self.instrument.get_mask_adjustment("X") == 0.24
 
     def test_create_mask(self):
         self.instrument.show_channel()
@@ -599,33 +600,34 @@ class TestDS1000Z(unittest.TestCase):
 
     def test_measurement_source(self):
         self.instrument.set_measurement_source(2)
-        assert self.instrument.get_measurement_source() == 'CHAN2'
+        assert self.instrument.get_measurement_source() == "CHAN2"
         self.instrument.set_measurement_source(1)
-        assert self.instrument.get_measurement_source() == 'CHAN1'
+        assert self.instrument.get_measurement_source() == "CHAN1"
 
     def test_counter_source(self):
         self.instrument.set_counter_source(2)
-        assert self.instrument.get_counter_source() == 'CHAN2'
+        assert self.instrument.get_counter_source() == "CHAN2"
         self.instrument.set_counter_source(1)
-        assert self.instrument.get_counter_source() == 'CHAN1'
+        assert self.instrument.get_counter_source() == "CHAN1"
 
     def test_clear_measurement(self):
-        self.instrument.show_measurement('VMAX')
+        self.instrument.show_measurement("VMAX")
         self.instrument.clear_measurement(1)
         self.instrument.recover_measurement(1)
         self.instrument.clear_measurement(1)
 
     def test_all_measurements_display(self):
+        time.sleep(3)
         self.instrument.show_all_measurements_display()
         assert self.instrument.all_measurements_is_shown()
         self.instrument.hide_all_measurements_display()
         assert not self.instrument.all_measurements_is_shown()
 
-    def test_all_measurements_display(self):
+    def test_all_measurements_display_source(self):
         self.instrument.set_all_measurements_display_source(2)
-        assert self.instrument.get_all_measurements_display_source() == 'CHAN2'
+        assert self.instrument.get_all_measurements_display_source() == "CHAN2"
         self.instrument.set_all_measurements_display_source(1)
-        assert self.instrument.get_all_measurements_display_source() == 'CHAN1'
+        assert self.instrument.get_all_measurements_display_source() == "CHAN1"
 
     def test_measure_threshold(self):
         self.instrument.set_measure_threshold_max(60)
@@ -643,18 +645,18 @@ class TestDS1000Z(unittest.TestCase):
 
     def test_measure_phase_source(self):
         self.instrument.set_measure_phase_source(2)
-        assert self.instrument.get_measure_phase_source() == 'CHAN2'
+        assert self.instrument.get_measure_phase_source() == "CHAN2"
         self.instrument.set_measure_phase_source(1)
-        assert self.instrument.get_measure_phase_source() == 'CHAN1'
+        assert self.instrument.get_measure_phase_source() == "CHAN1"
 
     def test_measure_delay_source(self):
         self.instrument.set_measure_delay_source(2)
-        assert self.instrument.get_measure_delay_source() == 'CHAN2'
+        assert self.instrument.get_measure_delay_source() == "CHAN2"
         self.instrument.set_measure_delay_source(1)
-        assert self.instrument.get_measure_delay_source() == 'CHAN1'
+        assert self.instrument.get_measure_delay_source() == "CHAN1"
 
     def test_show_statistics(self):
-        self.instrument.show_measurement('VMAX')
+        self.instrument.show_measurement("VMAX")
         self.instrument.hide_statistics()
         assert not self.instrument.statistic_is_shown()
         self.instrument.show_statistics()
@@ -664,16 +666,16 @@ class TestDS1000Z(unittest.TestCase):
         self.instrument.disable_source()
 
     def test_statistic_mode(self):
-        self.instrument.set_statistic_mode('DIFF')
-        assert self.instrument.get_statistic_mode() == 'DIFF'
-        self.instrument.set_statistic_mode('EXTR')
-        assert self.instrument.get_statistic_mode() == 'EXTR'
+        self.instrument.set_statistic_mode("DIFF")
+        assert self.instrument.get_statistic_mode() == "DIFF"
+        self.instrument.set_statistic_mode("EXTR")
+        assert self.instrument.get_statistic_mode() == "EXTR"
 
     def test_reset_statistic(self):
         self.instrument.reset_statistic()
 
     def test_get_measurement(self):
-        assert type(self.instrument.get_measurement('VMAX')) == float
+        assert type(self.instrument.get_measurement("VMAX")) == float
         self.instrument.clear_measurement()
 
     def test_enable_show_reference(self):
@@ -691,7 +693,7 @@ class TestDS1000Z(unittest.TestCase):
     def test_reference_source(self):
         self.instrument.show_channel()
         self.instrument.set_reference_source(1)
-        assert self.instrument.get_reference_source() == 'CHAN1'
+        assert self.instrument.get_reference_source() == "CHAN1"
         self.instrument.hide_channel()
 
     def test_reference_scale(self):
@@ -723,10 +725,10 @@ class TestDS1000Z(unittest.TestCase):
         assert not self.instrument.source_is_enabled()
 
     def test_source_impedance(self):
-        self.instrument.set_source_impedance('OMEG')
-        self.instrument.get_source_impedance() == 'OMEG'
-        self.instrument.set_source_impedance('FIFT')
-        self.instrument.get_source_impedance() == 'FIFT'
+        self.instrument.set_source_impedance("OMEG")
+        self.instrument.get_source_impedance() == "OMEG"
+        self.instrument.set_source_impedance("FIFT")
+        self.instrument.get_source_impedance() == "FIFT"
 
     def test_source_frequency(self):
         self.instrument.set_source_frequency(1e3)
@@ -741,20 +743,20 @@ class TestDS1000Z(unittest.TestCase):
         self.instrument.get_source_phase() == 0
 
     def test_align_source_phases(self):
-        for bus in [1,2]:
+        for bus in [1, 2]:
             self.instrument.show_channel(bus)
             self.instrument.enable_source(bus)
         self.instrument.autoscale()
         self.instrument.align_source_phases()
-        for bus in [1,2]:
+        for bus in [1, 2]:
             self.instrument.hide_channel(bus)
             self.instrument.disable_source(bus)
 
     def test_source_function(self):
-        self.instrument.set_source_function('SQU')
-        self.instrument.get_source_function() == 'SQU'
-        self.instrument.set_source_function('SIN')
-        self.instrument.get_source_function() == 'SIN'
+        self.instrument.set_source_function("SQU")
+        self.instrument.get_source_function() == "SQU"
+        self.instrument.set_source_function("SIN")
+        self.instrument.get_source_function() == "SIN"
 
     def test_source_ramp_symmetry(self):
         self.instrument.set_source_ramp_symmetry(50)
@@ -784,11 +786,11 @@ class TestDS1000Z(unittest.TestCase):
         self.instrument.disable_source_modulation()
         assert not self.instrument.source_modulation_is_enabled()
 
-    def test_source_modulation(self):
-        self.instrument.set_source_modulation_type('FM')
-        assert self.instrument.get_source_modulation_type() == 'FM'
-        self.instrument.set_source_modulation_type('AM')
-        assert self.instrument.get_source_modulation_type() == 'AM'
+    def test_source_modulation_type(self):
+        self.instrument.set_source_modulation_type("FM")
+        assert self.instrument.get_source_modulation_type() == "FM"
+        self.instrument.set_source_modulation_type("AM")
+        assert self.instrument.get_source_modulation_type() == "AM"
 
     def test_source_modulation_depth(self):
         self.instrument.set_source_modulation_depth(120)
@@ -803,18 +805,18 @@ class TestDS1000Z(unittest.TestCase):
         assert self.instrument.get_source_modulation_frequency() == 1000
 
     def test_source_modulation_function(self):
-        self.instrument.set_source_modulation_function('SQU')
-        assert self.instrument.get_source_modulation_function() == 'SQU'
-        self.instrument.set_source_modulation_function('SIN')
-        assert self.instrument.get_source_modulation_function() == 'SIN'
+        self.instrument.set_source_modulation_function("SQU")
+        assert self.instrument.get_source_modulation_function() == "SQU"
+        self.instrument.set_source_modulation_function("SIN")
+        assert self.instrument.get_source_modulation_function() == "SIN"
 
     def test_source_modulation_deviation(self):
-        self.instrument.set_source_modulation_type('FM')
+        self.instrument.set_source_modulation_type("FM")
         self.instrument.set_source_modulation_deviation(10)
         self.instrument.get_source_modulation_deviation() == 10
 
     def test_source_configuration(self):
-        assert self.instrument.get_source_configuration().count(',') == 4
+        assert self.instrument.get_source_configuration().count(",") == 4
 
     def test_configure_source(self):
         self.instrument.configure_source()
@@ -841,10 +843,10 @@ class TestDS1000Z(unittest.TestCase):
         assert self.instrument.get_gpib() == 1
 
     def test_language(self):
-        self.instrument.set_language('SCH')
-        assert self.instrument.get_language() == 'SCH'
-        self.instrument.set_language('ENGL')
-        assert self.instrument.get_language() == 'ENGL'
+        self.instrument.set_language("SCH")
+        assert self.instrument.get_language() == "SCH"
+        self.instrument.set_language("ENGL")
+        assert self.instrument.get_language() == "ENGL"
 
     def test_lock_keyboard(self):
         self.instrument.lock_keyboard()
@@ -872,7 +874,7 @@ class TestDS1000Z(unittest.TestCase):
         assert self.instrument.get_timebase_delay_offset() == 0
         self.instrument.disable_timebase_delay()
 
-    def test_timebase_delay(self):
+    def test_timebase_delay_scale(self):
         self.instrument.enable_timebase_delay()
         self.instrument.set_timebase_delay_scale(1e-6)
         assert self.instrument.get_timebase_delay_scale() == 1e-6
@@ -893,42 +895,61 @@ class TestDS1000Z(unittest.TestCase):
         assert self.instrument.get_timebase_scale() == 1e-6
 
     def test_timebase_mode(self):
-        self.instrument.set_timebase_mode('ROLL')
-        assert self.instrument.get_timebase_mode() == 'ROLL'
-        self.instrument.set_timebase_mode('XY')
-        assert self.instrument.get_timebase_mode() == 'XY'
-        self.instrument.set_timebase_mode('MAIN')
-        assert self.instrument.get_timebase_mode() == 'MAIN'
+        self.instrument.set_timebase_mode("ROLL")
+        assert self.instrument.get_timebase_mode() == "ROLL"
+        self.instrument.set_timebase_mode("XY")
+        assert self.instrument.get_timebase_mode() == "XY"
+        self.instrument.set_timebase_mode("MAIN")
+        assert self.instrument.get_timebase_mode() == "MAIN"
 
     def test_trigger_mode(self):
-        for mode in ['PULS','RUNT','WIND','NEDG','SLOP','VID','PATT','DEL',
-            'TIM','DUR','SHOL','RS232','IIC','SPI','EDGE']:
+        for mode in [
+            "PULS",
+            "RUNT",
+            "WIND",
+            "NEDG",
+            "SLOP",
+            "VID",
+            "PATT",
+            "DEL",
+            "TIM",
+            "DUR",
+            "SHOL",
+            "RS232",
+            "IIC",
+            "SPI",
+            "EDGE",
+        ]:
             self.instrument.set_trigger_mode(mode)
             assert self.instrument.get_trigger_mode() == mode
 
     def test_trigger_coupling(self):
-        for coupling in ['AC','LFR','HFR','DC']:
+        for coupling in ["AC", "LFR", "HFR", "DC"]:
             self.instrument.set_trigger_coupling(coupling)
             assert self.instrument.get_trigger_coupling() == coupling
 
     def test_trigger_status(self):
         assert self.instrument.get_trigger_status() in [
-            'TD','WAIT','RUN','AUTO','STOP'
+            "TD",
+            "WAIT",
+            "RUN",
+            "AUTO",
+            "STOP",
         ]
         assert self.instrument.is_running()
-        self.instrument.set_trigger_sweep('SING')
+        self.instrument.set_trigger_sweep("SING")
         self.instrument.force_trigger()
         assert not self.instrument.is_running()
-        self.instrument.set_trigger_sweep('AUTO')
+        self.instrument.set_trigger_sweep("AUTO")
         self.instrument.run()
 
     def test_trigger_sweep(self):
-        self.instrument.set_trigger_sweep('NORM')
-        assert self.instrument.get_trigger_sweep() == 'NORM'
-        self.instrument.set_trigger_sweep('SING')
-        assert self.instrument.get_trigger_sweep() == 'SING'
-        self.instrument.set_trigger_sweep('AUTO')
-        assert self.instrument.get_trigger_sweep() == 'AUTO'
+        self.instrument.set_trigger_sweep("NORM")
+        assert self.instrument.get_trigger_sweep() == "NORM"
+        self.instrument.set_trigger_sweep("SING")
+        assert self.instrument.get_trigger_sweep() == "SING"
+        self.instrument.set_trigger_sweep("AUTO")
+        assert self.instrument.get_trigger_sweep() == "AUTO"
 
     def test_trigger_holdoff(self):
         self.instrument.set_trigger_holdoff(10)
@@ -944,22 +965,22 @@ class TestDS1000Z(unittest.TestCase):
 
     def test_trigger_source(self):
         self.instrument.set_trigger_source(2)
-        assert self.instrument.get_trigger_source() == 'CHAN2'
+        assert self.instrument.get_trigger_source() == "CHAN2"
         self.instrument.set_trigger_source(1)
-        assert self.instrument.get_trigger_source() == 'CHAN1'
+        assert self.instrument.get_trigger_source() == "CHAN1"
 
     def test_trigger_direction(self):
-        self.instrument.set_trigger_mode('VID')
-        for slope in ['POS','NEG']:
+        self.instrument.set_trigger_mode("VID")
+        for slope in ["POS", "NEG"]:
             self.instrument.set_trigger_direction(slope)
             assert self.instrument.get_trigger_direction() == slope
-        self.instrument.set_trigger_mode('EDGE')
-        for slope in ['POS','NEG','RFAL']:
+        self.instrument.set_trigger_mode("EDGE")
+        for slope in ["POS", "NEG", "RFAL"]:
             self.instrument.set_trigger_direction(slope)
             assert self.instrument.get_trigger_direction() == slope
 
     def test_trigger_level(self):
-        for mode in ['VID','PULS','EDGE']:
+        for mode in ["VID", "PULS", "EDGE"]:
             self.instrument.set_trigger_mode(mode)
             self.instrument.set_trigger_level(1)
             assert self.instrument.get_trigger_level() == 1
@@ -967,15 +988,15 @@ class TestDS1000Z(unittest.TestCase):
             assert self.instrument.get_trigger_level() == 0
 
     def test_trigger_condition(self):
-        self.instrument.set_trigger_mode('PULS')
-        self.instrument.set_trigger_condition('PLES')
-        assert self.instrument.get_trigger_condition() == 'PLES'
-        self.instrument.set_trigger_condition('PGR')
-        assert self.instrument.get_trigger_condition() == 'PGR'
+        self.instrument.set_trigger_mode("PULS")
+        self.instrument.set_trigger_condition("PLES")
+        assert self.instrument.get_trigger_condition() == "PLES"
+        self.instrument.set_trigger_condition("PGR")
+        assert self.instrument.get_trigger_condition() == "PGR"
 
     def test_trigger_width(self):
-        self.instrument.set_trigger_mode('PULS')
-        self.instrument.set_trigger_condition('PGL')
+        self.instrument.set_trigger_mode("PULS")
+        self.instrument.set_trigger_condition("PGL")
         self.instrument.set_trigger_width(1e-3)
         self.instrument.get_trigger_width() == 1e-3
         self.instrument.set_trigger_width(1e-6)
@@ -990,71 +1011,71 @@ class TestDS1000Z(unittest.TestCase):
         assert self.instrument.get_trigger_upper_width() == 1e-6
 
     def test_trigger_window(self):
-        self.instrument.set_trigger_mode('SLOP')
-        self.instrument.set_trigger_window('TB')
-        assert self.instrument.get_trigger_window() == 'TB'
-        self.instrument.set_trigger_window('TA')
-        assert self.instrument.get_trigger_window() == 'TA'
+        self.instrument.set_trigger_mode("SLOP")
+        self.instrument.set_trigger_window("TB")
+        assert self.instrument.get_trigger_window() == "TB"
+        self.instrument.set_trigger_window("TA")
+        assert self.instrument.get_trigger_window() == "TA"
 
     def test_trigger_sync_type(self):
-        self.instrument.set_trigger_mode('VID')
-        self.instrument.set_trigger_sync_type('ODDF')
-        assert self.instrument.get_trigger_sync_type() == 'ODDF'
-        self.instrument.set_trigger_sync_type('ALIN')
-        assert self.instrument.get_trigger_sync_type() == 'ALIN'
+        self.instrument.set_trigger_mode("VID")
+        self.instrument.set_trigger_sync_type("ODDF")
+        assert self.instrument.get_trigger_sync_type() == "ODDF"
+        self.instrument.set_trigger_sync_type("ALIN")
+        assert self.instrument.get_trigger_sync_type() == "ALIN"
 
     def test_trigger_line(self):
-        self.instrument.set_trigger_mode('VID')
+        self.instrument.set_trigger_mode("VID")
         self.instrument.set_trigger_line(250)
         assert self.instrument.get_trigger_line() == 250
         self.instrument.set_trigger_line(1)
         assert self.instrument.get_trigger_line() == 1
 
     def test_trigger_standard(self):
-        self.instrument.set_trigger_mode('VID')
-        self.instrument.set_trigger_standard('PALS')
-        assert self.instrument.get_trigger_standard() == 'PALS'
-        self.instrument.set_trigger_standard('NTSC')
-        assert self.instrument.get_trigger_standard() == 'NTSC'
+        self.instrument.set_trigger_mode("VID")
+        self.instrument.set_trigger_standard("PALS")
+        assert self.instrument.get_trigger_standard() == "PALS"
+        self.instrument.set_trigger_standard("NTSC")
+        assert self.instrument.get_trigger_standard() == "NTSC"
 
     def test_trigger_pattern(self):
-        self.instrument.set_trigger_mode('PATT')
-        self.instrument.set_trigger_pattern('L,L,L,L')
-        assert self.instrument.get_trigger_pattern() == 'L,L,L,L'
-        self.instrument.set_trigger_pattern('X,X,X,X')
-        assert self.instrument.get_trigger_pattern() == 'X,X,X,X'
+        self.instrument.set_trigger_mode("PATT")
+        self.instrument.set_trigger_pattern("L,L,L,L")
+        assert self.instrument.get_trigger_pattern() == "L,L,L,L"
+        self.instrument.set_trigger_pattern("X,X,X,X")
+        assert self.instrument.get_trigger_pattern() == "X,X,X,X"
 
     def test_waveform_source(self):
         self.instrument.set_waveform_source(2)
-        assert self.instrument.get_waveform_source() == 'CHAN2'
+        assert self.instrument.get_waveform_source() == "CHAN2"
         self.instrument.set_waveform_source(1)
-        assert self.instrument.get_waveform_source() == 'CHAN1'
+        assert self.instrument.get_waveform_source() == "CHAN1"
 
     def test_waveform_mode(self):
-        for mode in ['MAX','RAW','NORM']:
+        for mode in ["MAX", "RAW", "NORM"]:
             self.instrument.set_waveform_mode(mode)
             assert self.instrument.get_waveform_mode() == mode
 
     def test_waveform_format(self):
-        for format in ['WORD','ASC','BYTE']:
+        for format in ["WORD", "ASC", "BYTE"]:
             self.instrument.set_waveform_format(format)
             assert self.instrument.get_waveform_format() == format
 
     def test_waveform_data(self):
-        self.instrument.set_waveform_format('ASC')
-        assert self.instrument.get_waveform_data().startswith(b'#90000')
+        self.instrument.set_waveform_format("ASC")
+        assert self.instrument.get_waveform_data().startswith(b"#90000")
 
     def test_waveform_increment(self):
-        assert type(self.instrument.get_waveform_increment('X')) == float
-        assert type(self.instrument.get_waveform_increment('Y')) == float
+        assert type(self.instrument.get_waveform_increment("X")) == float
+        assert type(self.instrument.get_waveform_increment("Y")) == float
 
     def test_waveform_origin(self):
-        assert type(self.instrument.get_waveform_origin('X')) == float
-        assert type(self.instrument.get_waveform_origin('Y')) == float
+        assert type(self.instrument.get_waveform_origin("X")) == float
+        assert type(self.instrument.get_waveform_origin("Y")) == float
 
     def test_waveform_reference(self):
-        assert type(self.instrument.get_waveform_reference('X'))
-        assert type(self.instrument.get_waveform_reference('Y'))
+        assert type(self.instrument.get_waveform_reference("X"))
+        assert type(self.instrument.get_waveform_reference("Y"))
 
     def test_waveform_start(self):
         self.instrument.set_waveform_start(600)
