@@ -22,11 +22,14 @@ def ds1000z_demo():
 
 def dp800_demo():
     instrument = DP800("192.168.254.101")
-    print(instrument)
-
+    #instrument.set_display_mode("NORM")
+    instrument.set_display_mode("WAVE")
+    instrument.take_screenshot()
+    #instrument.set_display_mode("DIAL")
+    #instrument.set_display_mode("CLAS")
 
 def main():
-    ds1000z_demo()
+    dp800_demo()
 
 if __name__ == "__main__":
     main()
