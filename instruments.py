@@ -626,9 +626,9 @@ class DS1000Z(vxi11.Instrument):
         n_header_bytes = int(chr(buff[1])) + 2
         n_data_bytes = int(buff[2:n_header_bytes].decode("ascii"))
         decoded_block = buff[n_header_bytes : n_header_bytes + n_data_bytes]
-        im = Image.open(io.BytesIO(decoded_block))
         filename = time.strftime("%Y-%m-%d_%H-%M-%S.png", time.localtime())
-        im.save(filename, format="png")
+        with open(filename, "wb+") as f:
+            f.write(decoded_block)
         return filename
 
     def get_display_type(self):
@@ -2688,7 +2688,9 @@ class DS1000Z(vxi11.Instrument):
         """
         channel = self._interpret_channel(channel)
         self.set_waveform_source(channel)
+        self.set_waveform_mode("RAW")
         self.set_waveform_format("BYTE")
+        self.stop()
         (
             format,
             type,
@@ -2701,30 +2703,37 @@ class DS1000Z(vxi11.Instrument):
             y_origin,
             y_reference,
         ) = self.get_waveform_preamble()
-        self.set_waveform_start(1)
-        self.set_waveform_stop(1200)
-        tmp_buff = self.get_waveform_data()
-        n_header_bytes = int(chr(tmp_buff[1])) + 2
-        n_data_bytes = int(tmp_buff[2:n_header_bytes].decode("ascii"))
-        buff = tmp_buff[n_header_bytes : n_header_bytes + n_data_bytes]
-        assert len(buff) == points
-        samples = list(struct.unpack(str(len(buff)) + "B", buff))
-        samples = [
-            (sample - y_origin - y_reference) * y_increment for sample in samples
-        ]
+
+        # Calculate the number of data points to read in each batch
+        max_points_per_batch = 250000
+        samples = []
+
+        # Fetch waveform data in chunks
+        for start in range(1, points + 1, max_points_per_batch):
+            stop = min(start + max_points_per_batch - 1, points)
+            self.set_waveform_start(start)
+            self.set_waveform_stop(stop)
+            
+            while True:
+                tmp_buff = self.get_waveform_data()
+                n_header_bytes = int(chr(tmp_buff[1])) + 2
+                n_data_bytes = int(tmp_buff[2:n_header_bytes].decode("ascii"))
+                buff = tmp_buff[n_header_bytes:n_header_bytes + n_data_bytes]
+                if len(buff) == (stop - start + 1):
+                    break
+            
+            samples.extend(list(struct.unpack(f'{len(buff)}B', buff)))
+        samples = [(sample - y_origin - y_reference) * y_increment for sample in samples]
         timebase_scale = self.get_timebase_scale()
         timebase_offset = self.get_timebase_offset()
-        x_axis = [
-            i * timebase_scale / 10.0 + timebase_offset
-            for i in range(-len(samples) // 2, len(samples) // 2)
-        ]
+        x_axis = [(i * x_increment + x_origin) for i in range(len(samples))]
         return x_axis, samples
 
 class DP800(vxi11.Instrument):
     def __init__(self, host, *args, **kwargs):
         super(DP800, self).__init__(host, *args, **kwargs)
         idn = self.get_identification()
-        match = re.match("RIGOL TECHNOLOGIES,DP8\d\d", idn)
+        match = re.match(r"RIGOL TECHNOLOGIES,DP8\d\d", idn)
         if not match:
             msg = "Unknown device identification:\n%s\n"
             raise NameError(msg)
