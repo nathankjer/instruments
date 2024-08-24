@@ -1,10 +1,7 @@
 import re
-import io
 import time
 import struct
 from decimal import Decimal
-
-from PIL import Image
 
 import vxi11
 
@@ -2723,9 +2720,8 @@ class DS1000Z(vxi11.Instrument):
                     break
             
             samples.extend(list(struct.unpack(f'{len(buff)}B', buff)))
+        self.run()
         samples = [(sample - y_origin - y_reference) * y_increment for sample in samples]
-        timebase_scale = self.get_timebase_scale()
-        timebase_offset = self.get_timebase_offset()
         x_axis = [(i * x_increment + x_origin) for i in range(len(samples))]
         return x_axis, samples
 
