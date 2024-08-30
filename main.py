@@ -1,4 +1,5 @@
-from instruments import DS1000Z, DP800
+from ds1000z import DS1000Z
+from dp800 import DP800
 
 import matplotlib.pyplot as plt
 
