@@ -1,7 +1,9 @@
 from ds1000z import DS1000Z
 from dp800 import DP800
+from proxr import ProXRRelayModule
 
 import matplotlib.pyplot as plt
+import random
 
 def ds1000z_demo():
 
@@ -38,6 +40,15 @@ def dp800_demo():
     instrument.set_display_mode("WAVE")
     #instrument.set_display_mode("DIAL")
     #instrument.set_display_mode("CLAS")
+
+def proxr_demo():
+    relay_board = ProXRRelayModule("192.168.1.88", 2101)
+    bank_values = [random.randint(0, 255) for _ in range(4)]
+    relay_board.disable_automatic_relay_refresh()
+    for i, bank_value in enumerate(bank_values):
+        relay_board.set_all_relays_by_bank(bank_value, i + 1)
+        relay_board.refresh()
+    relay_board.enable_automatic_relay_refresh()
 
 def main():
     ds1000z_demo()
