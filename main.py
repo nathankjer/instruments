@@ -4,6 +4,7 @@ from proxr import ProXRRelayModule
 
 import matplotlib.pyplot as plt
 import random
+import json
 
 def ds1000z_demo():
 
@@ -14,8 +15,24 @@ def ds1000z_demo():
     # sudo ifconfig enp7s0 up
     # ip a show enp7s0
     # ping 192.168.254.100
-    instrument = DS1000Z('192.168.254.100')
-    instrument.reset()
+    
+    try:
+        with open('config.json', 'r') as f:
+            config = json.load(f)
+    except FileNotFoundError:
+        print("Error: 'config.json' not found. Please check file path.")
+        return
+
+    print(f"Connecting to Oscilloscope at {config['oscilloscope_ip']}...")
+    try:
+        instrument = DS1000Z(config['oscilloscope_ip'])
+        instrument.reset()
+        print("Success: Connected to Oscilloscope.")
+    except Exception as e:
+        print(f"\nConnection Failed: {e}")
+        print("Hardware not found. Aborting demo to prevent crash.")
+        return
+
     instrument.set_probe_ratio(1)
     instrument.show_channel()
     instrument.set_channel_scale(1)
